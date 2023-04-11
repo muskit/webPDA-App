@@ -22,9 +22,8 @@
 
         width:100%;
         height:96px;
-
-        border-style: solid;
-        border-width: 2px;
+        
+        border-bottom: 1px solid;
     }
 
     .vertical-center {
