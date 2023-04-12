@@ -1,24 +1,30 @@
 <script lang="ts">
-  import Calendar from '@event-calendar/core';
-  import DayGrid from '@event-calendar/day-grid'
-    import Header from './components/Header.svelte';
-
-  let plugins = [DayGrid];
-  let options = {
-    view: 'dayGridMonth'
-  }
+  import Calendar from './components/Calendar.svelte';
+  import Header from './components/Header.svelte';
+  
 </script>
 
-<Header />
-<div class=calendar-container>
-  <Calendar {plugins} {options}/>
+<div class=container>
+  <Header />
+  <div class=calendar-container>
+    <Calendar />
+  </div>
 </div>
 
 <style>
+  .container {
+    /* background-color: blue; */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   .calendar-container {
+    /* background-color: green; */
+    flex: 1;
+    padding-top: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
-    min-height: 100vh;
-    /* background-color: blue; */
+    padding-bottom: 2rem;
   }
 </style>
