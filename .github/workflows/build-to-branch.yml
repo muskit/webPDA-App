@@ -1,0 +1,2 @@
+- name: GitHub Branch Deployer
+  uses: nicholasgriffintn/github-branch-deployment-action@1.0.0
