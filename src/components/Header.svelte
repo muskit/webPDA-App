@@ -9,8 +9,8 @@
     <div style="flex:1; font-size: 72px;">
         <a style="color: #1B4486">web</a><a style="color: #387cea">PDA</a>
     </div>
-    <div style="flex:1;background-color:blue">
-
+    <div style="flex:1;background-color:blue;">
+        
     </div>
 </div>
 

@@ -1,20 +1,37 @@
 <script lang="ts">
 	import Calendar from '@event-calendar/core';
 	import DayGrid from '@event-calendar/day-grid';
-	
+    import EventEditor from './EventEditor.svelte';
 
-	function onEventClick(info) {
-		console.log(info);
+	// currently selected things from event-calendar
+	let selDate: Object;
+	let selEvent: Object;
+
+	let eventEditor;
+
+	function onEventClick(ev) {
+		console.log(ev);
+		
+		if (selEvent != null) {
+			// TODO: handle deslecting old event
+		}
+		
+		selEvent = ev;
+
+		// TODO: handle selecting event
 	}
 
-	function onDateClick(info) {
-		console.log(info)
+	function onDateClick(date) {
+		console.log(eventEditor)
 	}
 
 	let plugins = [DayGrid];
 	let options = {
 		view: 'dayGridMonth',
 		height: '100%',
+		nowIndicator: true,
+		displayEventEnd: false,
+		dayMaxEvents: true,
 		events: [
 			{
 				"title": "Test Event",
@@ -42,8 +59,13 @@
 	}
 </script>
 
-<Calendar {plugins} {options} />
+<div class=container style="position:relative;">
+	<Calendar {plugins} {options} />
+	<EventEditor bind:this={eventEditor}/>
+</div>
 
 <style>
-
+	.container {
+		height: 100%;
+	}
 </style>
