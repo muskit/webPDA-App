@@ -1,9 +1,16 @@
+<svelte:options accessors={true} />
+
 <script lang='ts'>
     import { onMount } from "svelte";
 
-    let self: HTMLElement;
+    // other code to run when close button is clicked
+    export let closeCallback;
 
-    export let calEvent: Object;
+    let self: HTMLElement;
+    export let closed = false;
+
+    export let calEvent;
+    export let date;
 
     // window movement vars
     let dragging = false;
@@ -11,13 +18,13 @@
     export let winRight;
 
     // event components
-    let title='';
-    let date='';
-    let time='';
-    let memo='';
+    let inTitle='';
+    let inDate='';
+    let inTime='';
+    let inMemo='';
 
     onMount(()=>{
-        console.log(`${winLeft}, ${winRight}`);
+        // parse window props
         if(winLeft == null)
             winLeft = 0;
         if(winRight == null)
@@ -28,12 +35,18 @@
 
         self.parentElement.addEventListener('mouseup', onUp);
         self.parentElement.addEventListener('mousemove', onMove);
+
+        // parse input event/dates
+        if (calEvent != null) {
+
+        }
+        else if (date != null) {
+            
+        }
     })
 
     // window movement functions
     const onDown = ()=>{
-        console.log("Dragging!");
-        console.log(self);
         dragging=true;
     }
     const onUp = ()=>dragging=false;
@@ -46,8 +59,9 @@
         }
     }
     const close = ()=>{
-        console.log(self);
         self.parentNode.removeChild(self);
+        closed = true;
+        closeCallback();
     }
 </script>
 
@@ -66,24 +80,22 @@
         <div class=field>
             Title:
             <br>
-            <input value={title}>
+            <input value={inTitle}>
         </div>
         <div class=field>
             Date:
             <br>
-            <input value={date}>
+            <input value={inDate}>
         </div>
         <div class=field>
             Time:
             <br>
-            <input value={time}>
+            <input value={inTime}>
         </div>
         <div class=field>
             Memo:
             <br>
-            <textarea rows=15 cols=50>
-                {memo}
-            </textarea>
+            <textarea rows=15 cols=50 bind:value={inMemo}></textarea>
         </div>
         <div class=field id=btn-container>
             <button>Save</button>

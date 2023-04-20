@@ -2,12 +2,14 @@
 	import Calendar from '@event-calendar/core';
 	import DayGrid from '@event-calendar/day-grid';
     import EventEditor from './EventEditor.svelte';
+    import { onMount } from 'svelte';
 
 	// currently selected things from event-calendar
 	let selDate: Object;
 	let selEvent: Object;
 
-	let eventEditor;
+	let eventEditor: EventEditor;
+	let showEditor = false;
 
 	function onEventClick(ev) {
 		console.log(ev);
@@ -19,10 +21,13 @@
 		selEvent = ev;
 
 		// TODO: handle selecting event
+		showEditor = true;
 	}
 
 	function onDateClick(date) {
-		console.log(eventEditor)
+		
+
+		showEditor = true;
 	}
 
 	let plugins = [DayGrid];
@@ -59,9 +64,12 @@
 	}
 </script>
 
-<div class=container style="position:relative;">
+<div id=calview class=container style="position:relative;">
 	<Calendar {plugins} {options} />
-	<EventEditor bind:this={eventEditor}/>
+	{#if (showEditor)}
+		<EventEditor calEvent={selEvent} date={selDate}
+			closeCallback={()=>showEditor=false}/>
+	{/if}
 </div>
 
 <style>
