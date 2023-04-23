@@ -1,33 +1,46 @@
 <script lang="ts">
-	import Calendar from '@event-calendar/core';
+	import EventCalendar from '@event-calendar/core';
 	import DayGrid from '@event-calendar/day-grid';
-    import EventEditor from './EventEditor.svelte';
+    import EventEditor from './MemoEditor.svelte';
     import { onMount } from 'svelte';
+
+	import MemoStore from '../stores/MemoStore';
+    import { get } from 'svelte/store';
+    import { memoToEvent } from '../Conversions';
+
+	let evCal: EventCalendar;
 
 	// currently selected things from event-calendar
 	let selDate: Object;
 	let selEvent: Object;
 
-	let eventEditor: EventEditor;
 	let showEditor = false;
 
-	function onEventClick(ev) {
-		console.log(ev);
-		
-		if (selEvent != null) {
-			// TODO: handle deslecting old event
-		}
-		
-		selEvent = ev;
+	onMount(()=>{
+		MemoStore.subscribe(onMemoUpdate);
+	})
 
-		// TODO: handle selecting event
+	function onMemoUpdate(memos) {
+		evCal.refetchEvents();
+	}
+
+	function onEventClick(ev) {
+		console.log(ev.event);
+		selEvent = ev.event;
 		showEditor = true;
 	}
 
 	function onDateClick(date) {
-		
-
+		console.log(date);
 		showEditor = true;
+	}
+
+	function onEditorClose() {
+		showEditor = false;
+	}
+
+	function onEditorSave() {
+		onEditorClose();
 	}
 
 	let plugins = [DayGrid];
@@ -37,38 +50,32 @@
 		nowIndicator: true,
 		displayEventEnd: false,
 		dayMaxEvents: true,
-		events: [
-			{
-				"title": "Test Event",
-				"start": "2023-04-11 20:00:00",
-				"end": "2023-04-11 22:00:00",
-			},
-			{
-				"title": "Test Event",
-				"start": "2023-04-11 20:00:00",
-				"end": "2023-04-11 22:00:00",
-			},
-			{
-				"title": "Test Event",
-				"start": "2023-04-11 20:00:00",
-				"end": "2023-04-11 22:00:00",
-			},
-			{
-				"title": "Test Event",
-				"start": "2023-04-11 20:00:00",
-				"end": "2023-04-11 22:00:00",
+		eventSources: [{
+			events: function() {
+				console.log("refreshing calendar events...")
+				let evs = [];
+				let memos: Object = get(MemoStore);
+
+				// convert memos into Calendar Events
+				for (let k in memos) {
+					let ev = memoToEvent(k, memos[k]);
+					evs.push(ev);
+				}
+
+				return evs;
 			}
-		],
+		}],
 		eventClick: onEventClick,
 		dateClick: onDateClick,
 	}
 </script>
 
 <div id=calview class=container style="position:relative;">
-	<Calendar {plugins} {options} />
+	<EventCalendar bind:this={evCal} {plugins} {options} />
 	{#if (showEditor)}
-		<EventEditor calEvent={selEvent} date={selDate}
-			closeCallback={()=>showEditor=false}/>
+		<EventEditor event={selEvent} createDate={selDate}
+			closeCallback={onEditorClose}
+			saveCallback={onEditorSave}/>
 	{/if}
 </div>
 

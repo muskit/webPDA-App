@@ -2,46 +2,66 @@
 
 <script lang='ts'>
     import { onMount } from "svelte";
+    import { eventToMemo } from "../Conversions";
+    import MemoStore from "../stores/MemoStore";
 
-    // other code to run when close button is clicked
+    /// PROPS ///
+    // runs when close button is clicked
     export let closeCallback;
+    // runs when save button is clicked
+    export let saveCallback;
+    // given calendar event to edit
+    export let event;
+    // given date to create a calendar event
+    export let createDate;
 
     let self: HTMLElement;
-    export let closed = false;
-
-    export let calEvent;
-    export let date;
 
     // window movement vars
     let dragging = false;
     export let winLeft;
-    export let winRight;
+    export let winTop;
 
     // event components
-    let inTitle='';
-    let inDate='';
-    let inTime='';
-    let inMemo='';
+    let cNotes='';
+    let cDate='';
+    let cTime='';
+
+    function getFormattedDate(event) {
+        const date = event.start;
+        return date.toLocaleDateString();
+    }
+
+    function getFormattedTime(event) {
+        let date = event.start;
+        // return `${date.getHours()}:${date.getMinutes()}`;
+        return date.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
 
     onMount(()=>{
         // parse window props
         if(winLeft == null)
             winLeft = 0;
-        if(winRight == null)
-            winRight = 0;
+        if(winTop == null)
+            winTop = 0;
 
         self.style.left = winLeft;
-        self.style.top = winRight;
+        self.style.top = winTop;
 
-        self.parentElement.addEventListener('mouseup', onUp);
-        self.parentElement.addEventListener('mousemove', onMove);
+        self.getRootNode().addEventListener('mouseup', onUp);
+        self.getRootNode().addEventListener('mousemove', onMove);
 
-        // parse input event/dates
-        if (calEvent != null) {
-
+        if (event != null) {
+            // TODO: editing a memo
+            cDate = getFormattedDate(event);
+            cTime = getFormattedTime(event);
+            cNotes = event.title;
         }
-        else if (date != null) {
-            
+        else if (createDate != null) {
+            // TODO: creating an event
         }
     })
 
@@ -53,15 +73,20 @@
     const onMove = (ev)=> {
         if (dragging) {
             winLeft += ev.movementX;
-            winRight += ev.movementY;
+            winTop = Math.max(0, winTop+ev.movementY);
             self.style.left = `${winLeft}px`;
-            self.style.top = `${winRight}px`;
+            self.style.top = `${winTop}px`;
         }
     }
-    const close = ()=>{
-        self.parentNode.removeChild(self);
-        closed = true;
+    function closeBtn() {
         closeCallback();
+    }
+
+    function saveBtn() {
+        event.title = cNotes;
+        let m = eventToMemo(event);
+        MemoStore.set(event.id, m);
+        saveCallback();
     }
 </script>
 
@@ -72,33 +97,30 @@
             Memo Editor
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class=vertical-center id=close-btn on:click={close}>
+        <div class=vertical-center id=close-btn on:click={closeBtn}>
             X
         </div>
     </div>
     <div class=window-content>
         <div class=field>
-            Title:
+            Notes:
             <br>
-            <input value={inTitle}>
+            <textarea rows=15 cols=50 bind:value={cNotes}></textarea>
         </div>
-        <div class=field>
-            Date:
-            <br>
-            <input value={inDate}>
-        </div>
-        <div class=field>
-            Time:
-            <br>
-            <input value={inTime}>
-        </div>
-        <div class=field>
-            Memo:
-            <br>
-            <textarea rows=15 cols=50 bind:value={inMemo}></textarea>
+        <div style="display: flex; flex-direction: row">
+            <div class=field>
+                Time:
+                <br>
+                <input value={cTime}>
+            </div>
+            <div class=field>
+                Date:
+                <br>
+                <input value={cDate}>
+            </div>
         </div>
         <div class=field id=btn-container>
-            <button>Save</button>
+            <button on:click={saveBtn}>Save</button>
         </div>
     </div>
 </div>
