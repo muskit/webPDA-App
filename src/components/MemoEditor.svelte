@@ -3,7 +3,9 @@
 <script lang='ts'>
     import { onMount } from "svelte";
     import { eventToMemo } from "../Conversions";
+
     import MemoStore from "../stores/MemoStore";
+    import { DateInput, DatePicker } from 'date-picker-svelte';
 
     /// PROPS ///
     // runs when close button is clicked
@@ -11,8 +13,8 @@
     // runs when save button is clicked
     export let saveCallback;
     // given calendar event to edit
-    export let event;
-    // given date to create a calendar event
+    export let editEvent;
+    // given date to create a memo
     export let createDate;
 
     let self: HTMLElement;
@@ -24,21 +26,40 @@
 
     // event components
     let cNotes='';
-    let cDate='';
-    let cTime='';
+    let cTimeHr='';
+    let cTimeMin='';
 
-    function getFormattedDate(event) {
-        const date = event.start;
-        return date.toLocaleDateString();
-    }
+    // the memo we're making/modifying
+    let memo: Object;
+    let date: Date;
 
-    function getFormattedTime(event) {
-        let date = event.start;
+    function getFormattedTime(date: Date) {
         // return `${date.getHours()}:${date.getMinutes()}`;
         return date.toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
         });
+    }
+
+    // Create memo object from current vars
+    function createMemo() {
+        let id;
+        if (editEvent != null) {
+            id = editEvent.id;
+        } else {
+            id = crypto.randomUUID();
+        }
+        let year = date.getFullYear();
+        let month = date.getMonth();
+        let day = date.getDate();
+        let timeH = cTimeHr;
+        let timeM = cTimeMin;
+        return {
+            id,
+            notes: cNotes,
+            year, month, day,
+            timeH, timeM
+        }
     }
 
     onMount(()=>{
@@ -54,14 +75,18 @@
         self.getRootNode().addEventListener('mouseup', onUp);
         self.getRootNode().addEventListener('mousemove', onMove);
 
-        if (event != null) {
+        if (editEvent != null) {
             // TODO: editing a memo
-            cDate = getFormattedDate(event);
-            cTime = getFormattedTime(event);
-            cNotes = event.title;
+            date = editEvent.start;
+            memo = eventToMemo(editEvent);
+            cTimeHr = memo.timeH;
+            cTimeMin = memo.timeM;
+            cNotes = memo.notes;
         }
         else if (createDate != null) {
-            // TODO: creating an event
+            // TODO: creating a memo
+            date = createDate;
+            memo = {};
         }
     })
 
@@ -83,9 +108,10 @@
     }
 
     function saveBtn() {
-        event.title = cNotes;
-        let m = eventToMemo(event);
-        MemoStore.set(event.id, m);
+        let m = createMemo();
+        console.log(m);
+        MemoStore.set(m.id, m);
+        closeBtn();
         saveCallback();
     }
 </script>
@@ -109,14 +135,16 @@
         </div>
         <div style="display: flex; flex-direction: row">
             <div class=field>
-                Time:
-                <br>
-                <input value={cTime}>
-            </div>
-            <div class=field>
                 Date:
                 <br>
-                <input value={cDate}>
+                <DateInput max={new Date(2099, 11, 31)} value={date} format="MM/dd/yyyy" />
+            </div>
+            <div class=field>
+                Time (24h):
+                <br>
+                <input bind:value={cTimeHr} size=1>
+                :
+                <input bind:value={cTimeMin} size=1>
             </div>
         </div>
         <div class=field id=btn-container>
@@ -175,6 +203,7 @@
 
     .field:not(:last-child) {
         margin-bottom: 20px;
+        width: 50%;
     }
 
     #btn-container {

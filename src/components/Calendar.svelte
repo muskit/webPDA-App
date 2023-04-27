@@ -26,12 +26,15 @@
 
 	function onEventClick(ev) {
 		console.log(ev.event);
+		selDate = null;
 		selEvent = ev.event;
 		showEditor = true;
 	}
 
 	function onDateClick(date) {
-		console.log(date);
+		console.log(date.date);
+		selEvent = null;
+		selDate = date.date;
 		showEditor = true;
 	}
 
@@ -73,7 +76,7 @@
 <div id=calview class=container style="position:relative;">
 	<EventCalendar bind:this={evCal} {plugins} {options} />
 	{#if (showEditor)}
-		<EventEditor event={selEvent} createDate={selDate}
+		<EventEditor editEvent={selEvent} createDate={selDate}
 			closeCallback={onEditorClose}
 			saveCallback={onEditorSave}/>
 	{/if}

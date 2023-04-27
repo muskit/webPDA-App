@@ -20,8 +20,8 @@ export function eventToMemo(event) {
 	let month = dt.getMonth();
 	let day = dt.getDate();
 	console.log(`${year}/${month}/${day}`)
-	let timeH = 0;
-	let timeM = 0;
+	let timeH = dt.getHours();
+	let timeM = dt.getMinutes();
 
 	if (!event.allDay) {
 		// set time
