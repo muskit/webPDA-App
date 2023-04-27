@@ -15,13 +15,13 @@ if (localStorage.memos == undefined) {
 	// localStorage.memos = "{}";
 	localStorage.memos ='{\n\
 		"22b04e32-8263-43ec-91e3-396f6292f337": {\n\
-				"notes": "362: Presentation",\n\
-				"year": 2023,\n\
-				"month": 4,\n\
-				"day": 4,\n\
-				"timeH": 13,\n\
-				"timeM": 0\n\
-			}\
+			"notes": "362: Presentation",\n\
+			"year": 2023,\n\
+			"month": 4,\n\
+			"day": 4,\n\
+			"timeH": 13,\n\
+			"timeM": 0\n\
+		}\
 	}'
 }
 
