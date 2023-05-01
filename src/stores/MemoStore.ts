@@ -49,5 +49,11 @@ export default {
 			val[id] = memo;
 			return val;
 		})
+	},
+	remove: (id) => {
+		memoStore.update((val: Object) => {
+			delete val[id];
+			return val;
+		})
 	}
 };

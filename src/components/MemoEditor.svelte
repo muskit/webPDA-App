@@ -19,6 +19,9 @@
 
     let self: HTMLElement;
 
+    // set depending on editing or creating
+    let isEdit = false;
+
     // window movement vars
     let dragging = false;
     export let winLeft;
@@ -62,6 +65,13 @@
         }
     }
 
+    // Delete the memo object from localStorage
+    function deleteMemo() {
+        if (memo != null) {
+            MemoStore.remove(memo.id);
+        }
+    }
+
     onMount(()=>{
         // parse window props
         if(winLeft == null)
@@ -75,8 +85,9 @@
         self.getRootNode().addEventListener('mouseup', onUp);
         self.getRootNode().addEventListener('mousemove', onMove);
 
+        isEdit = false;
         if (editEvent != null) {
-            // TODO: editing a memo
+            isEdit = true;
             date = editEvent.start;
             memo = eventToMemo(editEvent);
             cTimeHr = memo.timeH;
@@ -114,13 +125,18 @@
         closeBtn();
         saveCallback();
     }
+
+    function delBtn() {
+        deleteMemo();
+        closeBtn();
+    }
 </script>
 
 <div class=container bind:this={self}>
     <div class=toolbar
         on:mousedown={onDown}>
         <div class=vertical-center id=title>
-            Memo Editor
+            {isEdit ? "Editing Event" : "Creating Event"}
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div class=vertical-center id=close-btn on:click={closeBtn}>
@@ -148,6 +164,9 @@
             </div>
         </div>
         <div class=field id=btn-container>
+            {#if (isEdit)}
+            <button on:click={delBtn}>Delete</button>
+            {/if}
             <button on:click={saveBtn}>Save</button>
         </div>
     </div>
