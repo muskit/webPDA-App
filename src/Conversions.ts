@@ -4,7 +4,7 @@ export function memoToEvent(id, memo) {
 
 	return {
 		id: id,
-		allDay: (memo.timeH == -1),
+		allDay: (memo.timeH == ""),
 		start: start,
 		end: end,
 		title: memo.notes,	

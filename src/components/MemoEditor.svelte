@@ -153,7 +153,7 @@
             <div class=field>
                 Date:
                 <br>
-                <DateInput max={new Date(2099, 11, 31)} value={date} format="MM/dd/yyyy" />
+                <DateInput max={new Date(2099, 11, 31)} bind:value={date} format="MM/dd/yyyy" />
             </div>
             <div class=field>
                 Time (24h):
