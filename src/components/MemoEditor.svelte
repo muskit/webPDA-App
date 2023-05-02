@@ -136,7 +136,7 @@
     <div class=toolbar
         on:mousedown={onDown}>
         <div class=vertical-center id=title>
-            {isEdit ? "Editing Event" : "Creating Event"}
+            {isEdit ? "Editing Memo" : "Creating Memo"}
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div class=vertical-center id=close-btn on:click={closeBtn}>
